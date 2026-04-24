@@ -1,5 +1,7 @@
 import './css/style.css';
 
+const SORT_INTERVAL_MS = 2000;
+
 const sortOrders = [
   { field: 'id', dir: 'asc' },
   { field: 'id', dir: 'desc' },
@@ -47,7 +49,7 @@ function renderTable(films) {
       <td>(${film.year})</td>
       <td>imdb: ${film.imdb.toFixed(2)}</td>
     `;
-    tbody.appendChild(tr);
+    tbody.append(tr);
   });
 }
 
@@ -86,6 +88,16 @@ function sortInMemory(field, dir) {
 let currentSortIndex = 0;
 
 document.addEventListener('DOMContentLoaded', () => {
+  const tbody = document.querySelector('.films-table tbody');
+  if (!tbody) {
+    throw new Error('Элемент .films-table tbody не найден в DOM');
+  }
+
+  const indicator = document.querySelector('.sort-indicator');
+  if (!indicator) {
+    throw new Error('Элемент .sort-indicator не найден в DOM');
+  }
+
   loadData().then((films) => {
     filmsData = films;
     renderTable(filmsData);
@@ -96,6 +108,6 @@ document.addEventListener('DOMContentLoaded', () => {
       const { field, dir } = sortOrders[currentSortIndex];
       sortInMemory(field, dir);
       currentSortIndex = (currentSortIndex + 1) % sortOrders.length;
-    }, 2000);
+    }, SORT_INTERVAL_MS);
   });
 });
