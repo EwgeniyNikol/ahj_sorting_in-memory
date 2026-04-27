@@ -86,6 +86,22 @@ function sortInMemory(field, dir) {
 }
 
 let currentSortIndex = 0;
+let sortIntervalId = null;
+
+function startSorting() {
+  sortIntervalId = setInterval(() => {
+    const { field, dir } = sortOrders[currentSortIndex];
+    sortInMemory(field, dir);
+    currentSortIndex = (currentSortIndex + 1) % sortOrders.length;
+  }, SORT_INTERVAL_MS);
+}
+
+function stopSorting() {
+  if (sortIntervalId) {
+    clearInterval(sortIntervalId);
+    sortIntervalId = null;
+  }
+}
 
 document.addEventListener('DOMContentLoaded', () => {
   const tbody = document.querySelector('.films-table tbody');
@@ -103,11 +119,8 @@ document.addEventListener('DOMContentLoaded', () => {
     renderTable(filmsData);
     sortInMemory(sortOrders[0].field, sortOrders[0].dir);
     currentSortIndex = 1;
-
-    setInterval(() => {
-      const { field, dir } = sortOrders[currentSortIndex];
-      sortInMemory(field, dir);
-      currentSortIndex = (currentSortIndex + 1) % sortOrders.length;
-    }, SORT_INTERVAL_MS);
+    startSorting();
   });
 });
+
+export { startSorting, stopSorting };
